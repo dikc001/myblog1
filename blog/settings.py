@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main_app',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -127,23 +128,34 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Import the necessary modules
+import os
+import boto3
+from storages.backends.s3boto3 import S3Boto3Storage
+
 # S3 BUCKETS CONFIG
 AWS_ACCESS_KEY_ID = 'AKIAR572DW24F5TAW7R6'
 AWS_SECRET_ACCESS_KEY = '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'
 AWS_STORAGE_BUCKET_NAME = 'starwalker-myblog'
 AWS_S3_SIGNATURE_NAME = 's3v4'
 AWS_S3_REGION = 'eu-north-1'
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
 AWS_S3_VERITY = True
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-## we need this or not?
-## AWS_STATIC_LOCATION = 'static'
-## AWS_PUBLIC_MEDIA_LOCATION = 'media'
-## AWS_PRIVATE_MEDIA_LOCATION = 'private'
-## STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# S3 for static and media file
+AWS_STATIC_LOCATION = 'static'
+AWS_PUBLIC_MEDIA_LOCATION = 'media'
+AWS_PRIVATE_MEDIA_LOCATION = 'private'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
+STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/'
 
+# Ensure that Django uses a secure proxy header for HTTPS requests
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # settings.py
 
